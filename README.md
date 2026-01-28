@@ -2,37 +2,38 @@
 
 ## 📌 Tentang Repository Ini
 
-Repository ini berisi source code **Sistem Rekomendasi Jurusan SMK Berbasis AI** yang dirancang untuk membantu siswa SMP menentukan jurusan SMK yang paling sesuai berdasarkan **kepribadian, minat, dan preferensi** mereka.
+Repository ini berisi source code **Sistem Rekomendasi Jurusan SMK Berbasis AI** yang dirancang untuk membantu siswa SMP menentukan jurusan SMK yang paling sesuai berdasarkan **minat, kebiasaan, dan kecenderungan kepribadian**.
 
-Sistem ini memanfaatkan **Artificial Intelligence (LLM)** sebagai alat bantu analisis (decision support system), bukan sebagai pengambil keputusan mutlak. Hasil analisis AI akan divalidasi oleh sistem dan dipadukan dengan data jurusan serta sekolah yang tersedia di database.
+Sistem ini menggunakan **Artificial Intelligence (LLM)** sebagai *decision support system*, bukan sebagai penentu keputusan mutlak. Semua hasil AI **divalidasi oleh backend** dan dicocokkan dengan data jurusan serta sekolah yang tersedia di database.
 
 ---
 
 ## 🎯 Tujuan Pengembangan
 
-Tujuan utama dari project ini adalah:
+Tujuan utama pengembangan sistem ini adalah:
 
-* Membantu siswa SMP mengenali kecenderungan minat dan kepribadian mereka
-* Memberikan rekomendasi jurusan SMK yang relevan dan rasional
+* Membantu siswa SMP mengenali potensi dan minat diri
+* Memberikan rekomendasi jurusan SMK yang rasional dan terukur
 * Menyediakan daftar sekolah yang memiliki jurusan terkait
-* Menerapkan teknologi AI secara **terkontrol, terstruktur, dan akademis**
-* Menjadi implementasi nyata pemanfaatan AI dalam sistem pendidikan
+* Menerapkan AI secara **terkontrol, akademis, dan bertanggung jawab**
+* Menjadi studi kasus implementasi AI di bidang pendidikan
 
 ---
 
 ## 🧠 Konsep Sistem
 
-Sistem bekerja dengan alur sebagai berikut:
+Alur kerja sistem secara umum:
 
 1. Siswa mengisi kuisioner (minat, kebiasaan, preferensi)
-2. Data dikirim ke backend untuk diproses
-3. AI menganalisis kepribadian dan kecenderungan siswa
-4. AI memberikan skor kecocokan terhadap jurusan SMK
-5. Backend memvalidasi hasil AI
-6. Sistem mengambil data sekolah dari database
-7. Rekomendasi akhir ditampilkan ke pengguna
+2. Data dikirim ke backend (NestJS)
+3. Backend memproses dan menyusun prompt
+4. AI menganalisis kecenderungan siswa
+5. AI menghasilkan rekomendasi jurusan + skor kecocokan (JSON)
+6. Backend memvalidasi hasil AI dengan database
+7. Sistem mengambil data sekolah terkait
+8. Hasil akhir ditampilkan ke pengguna
 
-AI hanya berperan sebagai **alat analisis**, sementara keputusan akhir tetap dikontrol oleh sistem.
+AI **tidak pernah langsung menentukan hasil akhir**, seluruh keputusan tetap dikontrol oleh sistem.
 
 ---
 
@@ -40,21 +41,21 @@ AI hanya berperan sebagai **alat analisis**, sementara keputusan akhir tetap dik
 
 ### Frontend
 
-* **Next.js 14 (App Router)**
-* **TypeScript**
+* Next.js 14 (App Router)
+* TypeScript
 * React
 * (Opsional) Tailwind CSS
 
 ### Backend
 
-* **NestJS**
-* **TypeScript**
+* NestJS
+* TypeScript
 * REST API
 
 ### Artificial Intelligence
 
-* **OpenRouter API**
-* Model LLM (GPT / Claude / LLaMA sesuai kebutuhan)
+* OpenRouter API
+* Model LLM (GPT / Claude / LLaMA)
 
 ### Database
 
@@ -83,8 +84,6 @@ flowchart LR
 ---
 
 ## 🗂️ Entity Relationship Diagram (ERD)
-
-ERD berikut menggambarkan struktur basis data utama yang digunakan dalam sistem rekomendasi jurusan SMK berbasis AI. Desain ini memastikan bahwa hasil analisis AI selalu divalidasi terhadap data jurusan dan sekolah yang tersimpan di database.
 
 ```mermaid
 erDiagram
@@ -138,26 +137,6 @@ erDiagram
 
 ---
 
-mermaid
-flowchart LR
-A[User / Siswa] --> B[Next.js Frontend]
-B --> C[NestJS Backend API]
-
-```
-C --> D[AI Service - OpenRouter]
-C --> E[Database Jurusan & Sekolah]
-
-D --> C
-E --> C
-
-C --> B
-B --> A
-```
-
-````
-
----
-
 ## 🔄 Flowchart Proses Sistem
 
 ```mermaid
@@ -186,7 +165,7 @@ flowchart TD
     M --> N[Susun Rekomendasi Final]
     N --> O[Tampilkan Hasil]
     O --> P[Selesai]
-````
+```
 
 ---
 
@@ -194,16 +173,17 @@ flowchart TD
 
 ```bash
 root
-├─ frontend/        # Next.js Frontend
+├─ frontend/            # Next.js Frontend
 │  ├─ app/
 │  └─ components/
 │
-├─ backend/         # NestJS Backend
+├─ backend/             # NestJS Backend
 │  ├─ src/
-│  │  ├─ ai/
-│  │  ├─ jurusan/
-│  │  ├─ sekolah/
-│  │  └─ analysis/
+│  │  ├─ ai/            # Integrasi OpenRouter
+│  │  ├─ major/         # Master Jurusan
+│  │  ├─ school/        # Master Sekolah
+│  │  ├─ school-major/  # Relasi sekolah & jurusan
+│  │  └─ analysis/      # Analisis & rekomendasi
 │  └─ main.ts
 │
 └─ README.md
@@ -211,32 +191,107 @@ root
 
 ---
 
+## 🔰 Tahapan Pengembangan Sistem
+
+### ⚙️ Tahap 1 — Setup Backend Core
+
+* Init NestJS Project
+* ENV Configuration (Database & OpenRouter)
+* Setup Prisma ORM
+* Prisma Service & Module
+
+**Output:** Backend siap query database
+
+---
+
+### 🗃️ Tahap 2 — Data Master
+
+* Seeder Jurusan (Major)
+* Seeder Sekolah (School)
+* Seeder Relasi School-Major
+* CRUD Master Data
+
+Endpoint minimal:
+
+* `GET /majors`
+* `GET /schools?majorId=`
+
+**Output:** Data master siap digunakan
+
+---
+
+### 🧠 Tahap 3 — Analysis System (Tanpa AI)
+
+* Module analysis
+* Simpan data siswa & jawaban
+* Simpan hasil analisis dummy
+* Validasi DTO & error handling
+
+**Output:** Flow sistem berjalan stabil
+
+---
+
+### 🤖 Tahap 4 — Integrasi AI
+
+* Integrasi OpenRouter
+* Prompt terkontrol
+* Output wajib JSON
+* Validasi hasil AI
+
+**Output:** AI aman dan akademis
+
+---
+
+### 🎨 Tahap 5 — Frontend
+
+* Setup Next.js App Router
+* Form kuisioner siswa
+* Halaman hasil rekomendasi
+
+**Output:** Sistem bisa digunakan user
+
+---
+
+### 🚀 Tahap 6 — Polishing & Akademis
+
+* Penjelasan hasil rekomendasi
+* Disclaimer AI
+* Dokumentasi & README
+
+**Output:** Layak presentasi dan akademik
+
+---
+
+## 🧾 Ringkasan Pegangan
+
+> **Konsep → ENV → DB → Seeder → CRUD → Analysis → AI → Frontend**
+
+---
+
 ## 📌 Catatan Penting
 
-* Sistem ini **tidak menggantikan peran konselor pendidikan**
-* AI digunakan sebagai pendukung analisis, bukan penentu mutlak
-* Semua hasil AI divalidasi sebelum ditampilkan ke pengguna
+* Sistem ini **tidak menggantikan konselor pendidikan**
+* AI bersifat pendukung analisis
+* Semua hasil AI divalidasi backend
 
 ---
 
 ## 🚀 Pengembangan Lanjutan
 
-Beberapa fitur yang dapat dikembangkan ke depannya:
-
-* Akun siswa dan histori hasil analisis
-* Dashboard admin untuk kelola jurusan & sekolah
-* Visualisasi skor kecocokan
-* Multi-model AI comparison
-* Export hasil rekomendasi (PDF)
+* Akun siswa & histori analisis
+* Dashboard admin
+* Visualisasi skor
+* Perbandingan multi-model AI
+* Export hasil (PDF)
 
 ---
 
 ## 📄 Lisensi
 
-Project ini dikembangkan untuk keperluan edukasi dan akademik.
+Project ini dikembangkan untuk keperluan **edukasi dan akademik**.
 
 ---
 
 ## 🙌 Penutup
 
-Project ini diharapkan dapat menjadi contoh implementasi AI yang **etis, realistis, dan bermanfaat** dalam dunia pendidikan, khususnya dalam membantu siswa menentukan jalur pendidikan yang sesuai dengan potensi mereka.
+Project ini diharapkan menjadi contoh penerapan AI yang **etis, terkontrol, dan bermanfaat** dalam membantu siswa menentukan jurusan pendidikan yang sesuai dengan potensi mereka.
