@@ -82,6 +82,82 @@ flowchart LR
 
 ---
 
+## 🗂️ Entity Relationship Diagram (ERD)
+
+ERD berikut menggambarkan struktur basis data utama yang digunakan dalam sistem rekomendasi jurusan SMK berbasis AI. Desain ini memastikan bahwa hasil analisis AI selalu divalidasi terhadap data jurusan dan sekolah yang tersimpan di database.
+
+```mermaid
+erDiagram
+    STUDENT ||--o{ ANALYSIS_RESULT : has
+    ANALYSIS_RESULT ||--o{ ANALYSIS_RECOMMENDATION : generates
+    MAJOR ||--o{ ANALYSIS_RECOMMENDATION : recommended
+    SCHOOL ||--o{ SCHOOL_MAJOR : has
+    MAJOR ||--o{ SCHOOL_MAJOR : offered_by
+
+    STUDENT {
+        int id PK
+        string name
+        string gender
+        date birth_date
+        datetime created_at
+    }
+
+    ANALYSIS_RESULT {
+        int id PK
+        int student_id FK
+        text personality_summary
+        datetime created_at
+    }
+
+    ANALYSIS_RECOMMENDATION {
+        int id PK
+        int analysis_result_id FK
+        int major_id FK
+        int score
+    }
+
+    MAJOR {
+        int id PK
+        string name
+        string description
+    }
+
+    SCHOOL {
+        int id PK
+        string name
+        string address
+        string city
+    }
+
+    SCHOOL_MAJOR {
+        int id PK
+        int school_id FK
+        int major_id FK
+    }
+```
+
+---
+
+mermaid
+flowchart LR
+A[User / Siswa] --> B[Next.js Frontend]
+B --> C[NestJS Backend API]
+
+```
+C --> D[AI Service - OpenRouter]
+C --> E[Database Jurusan & Sekolah]
+
+D --> C
+E --> C
+
+C --> B
+B --> A
+```
+
+````
+
+---
+
 ## 🔄 Flowchart Proses Sistem
 
 ```mermaid
@@ -110,7 +186,7 @@ flowchart TD
     M --> N[Susun Rekomendasi Final]
     N --> O[Tampilkan Hasil]
     O --> P[Selesai]
-```
+````
 
 ---
 
